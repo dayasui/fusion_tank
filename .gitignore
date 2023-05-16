@@ -1,0 +1,9 @@
+# Mac
+.DS_Store
+UnityExport/build
+parallel-unity-env.json
+env-*
+tools/node_modules
+tools/.vscode
+bumper_clone_*
+UnityWebGL
