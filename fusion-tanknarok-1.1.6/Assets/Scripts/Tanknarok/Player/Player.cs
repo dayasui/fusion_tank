@@ -299,7 +299,7 @@ namespace FusionExamples.Tanknarok
 
 		public void Move()
 		{
-			if (!isActivated || !_stuned)
+			if (!isActivated || _stuned)
 				return;
 			this.MoveCore(new Vector3(moveDirection.x,0,moveDirection.y));
 			//_cc.Move(new Vector3(moveDirection.x,0,moveDirection.y));
