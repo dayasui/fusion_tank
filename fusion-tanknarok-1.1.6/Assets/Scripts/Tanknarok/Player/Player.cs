@@ -58,11 +58,14 @@ namespace FusionExamples.Tanknarok
 
 		[Networked]
 		public NetworkBool ready { get; set; }
+		[Networked]
+		private TickTimer StanTime { get; set; }
 
 		public static Player local { get; set; }
 		
 		private float _baseSpeed = 10f;
 		private float _maxVelocityChange = 10.0f;
+		private bool _stuned = false;
 
 		public enum State
 		{
@@ -504,6 +507,27 @@ namespace FusionExamples.Tanknarok
 					Runner.Despawn(Object);
 				}
 			}
-		}		 
+		}
+		
+		private void HitPlayer(Vector3 velocityF, float duration) {
+			this._stuned = true;
+			this.StanTime = TickTimer.CreateFromSeconds(Runner, duration);
+			this._rb.Rigidbody.AddForce(
+				Vector3.Normalize(velocityF) * velocityF.magnitude,
+				ForceMode.Impulse);
+		}
+		
+		private void OnCollisionEnter(Collision collision) {
+			foreach (ContactPoint contact in collision.contacts) {
+				Debug.DrawRay(contact.point, contact.normal, Color.white);
+				if (collision.gameObject.CompareTag("Player")) {
+					Debug.Log("playerに当たった");
+					var hitDir = contact.normal;
+					var opponent = collision.gameObject.GetComponent<Player>();
+					this.HitPlayer(hitDir * 2, 0.5f);
+					return;
+				}
+			}
+		}
 	}
 }
