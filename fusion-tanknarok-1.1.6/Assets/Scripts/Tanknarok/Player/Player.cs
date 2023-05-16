@@ -188,6 +188,11 @@ namespace FusionExamples.Tanknarok
 
 				if (isRespawningDone)
 					ResetPlayer();
+				
+				if (StanTime.Expired(Runner)) {
+					StanTime = TickTimer.None;
+					this._stuned = false;
+				}
 			}
 
 			CheckForPowerupPickup();
@@ -271,32 +276,30 @@ namespace FusionExamples.Tanknarok
 		*/
 		
 		private void MoveCore(Vector3 moveDir) {
-			//if (IsGrounded(transform.position)) {
-				// Calculate how fast we should be moving
-				Vector3 targetVelocity = moveDir;
-				targetVelocity *= this._baseSpeed;
-				Vector3 velocity = this._rb.Rigidbody.velocity;
+			// Calculate how fast we should be moving
+			Vector3 targetVelocity = moveDir;
+			targetVelocity *= this._baseSpeed;
+			Vector3 velocity = this._rb.Rigidbody.velocity;
 
-				// 減速処理
-				if (targetVelocity.magnitude < velocity.magnitude) {
-					targetVelocity = velocity;
-					this._rb.Rigidbody.velocity /= 1.1f;
-				}
+			// 減速処理
+			if (targetVelocity.magnitude < velocity.magnitude) {
+				targetVelocity = velocity;
+				this._rb.Rigidbody.velocity /= 1.1f;
+			}
 
-				Vector3 velocityChange = (targetVelocity - velocity);
-				velocityChange.x = Mathf.Clamp(velocityChange.x, - this._maxVelocityChange, this._maxVelocityChange);
-				velocityChange.z = Mathf.Clamp(velocityChange.z, - this._maxVelocityChange, this._maxVelocityChange);
-				velocityChange.y = 0;
+			Vector3 velocityChange = (targetVelocity - velocity);
+			velocityChange.x = Mathf.Clamp(velocityChange.x, - this._maxVelocityChange, this._maxVelocityChange);
+			velocityChange.z = Mathf.Clamp(velocityChange.z, - this._maxVelocityChange, this._maxVelocityChange);
+			velocityChange.y = 0;
 
-				if (Mathf.Abs(this._rb.Rigidbody.velocity.magnitude) < this._baseSpeed * 1.0f) {
-					this._rb.Rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
-				}
-			//}
+			if (Mathf.Abs(this._rb.Rigidbody.velocity.magnitude) < this._baseSpeed * 1.0f) {
+				this._rb.Rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
+			}
 		}
 
 		public void Move()
 		{
-			if (!isActivated)
+			if (!isActivated || !_stuned)
 				return;
 			this.MoveCore(new Vector3(moveDirection.x,0,moveDirection.y));
 			//_cc.Move(new Vector3(moveDirection.x,0,moveDirection.y));
